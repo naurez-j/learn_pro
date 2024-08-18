@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:learn_pro/features/data/models/request/login_request_model.dart';
 import 'package:learn_pro/features/data/models/request/register_user_request_model.dart';
+import 'package:learn_pro/features/data/models/response/authenticate_user_response.dart';
 import 'package:learn_pro/features/data/models/response/register_response_model.dart';
 import 'package:learn_pro/utils/app_consts.dart';
 
@@ -157,8 +158,9 @@ class RemoteDataSource {
     }
   }
 
-  Future<LoginResponseModel> authenticateUser(String token) async {
-    LoginResponseModel loginResponseModel;
+  Future<AuthenticateUserResponse> authenticateUser(String token) async {
+    print('This is the token: $token');
+    AuthenticateUserResponse authenticateUserResponse;
     try {
       final response = await dio.get(
         'https://festive-clarke.93-51-37-244.plesk.page/api/v1/user',
@@ -168,10 +170,12 @@ class RemoteDataSource {
           },
         ),
       );
+      print(response);
       final responseData = response.data;
-      return LoginResponseModel.fromJson(responseData);
+      authenticateUserResponse= AuthenticateUserResponse.fromJson(responseData);
+      return authenticateUserResponse;
     } catch (e) {
-      print(e);
+      print('Error is this :$e');
       throw Exception(e);
     }
   }

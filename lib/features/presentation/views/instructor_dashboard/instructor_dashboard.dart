@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:learn_pro/features/data/data_sources/local_storage.dart';
+import 'package:learn_pro/features/data/data_sources/remote_datasource.dart';
 
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/app_consts.dart';
@@ -16,6 +19,10 @@ class InstructorDashboard extends StatefulWidget {
 }
 
 class _InstructorDashboardState extends State<InstructorDashboard> {
+
+  RemoteDataSource remoteDataSource = RemoteDataSource();
+  LocalStorage localStorage = LocalStorage();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,16 +63,35 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const LoginScreen(),
-                        ),
-                        (Route<dynamic> route) => false,
-                      );
+                    onPressed: () async{
+                      try{
+                        await remoteDataSource.logoutUser();
+                        await localStorage.deleteAuthToken();
+                        setState(() {
+                          AppConst.token='';
+                          AppConst.role='';
+                          AppConst.name='';
+                          AppConst.email='';
+                          AppConst.userId=0;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation,
+                                secondaryAnimation) =>
+                            const LoginScreen(),
+                          ),
+                              (Route<dynamic> route) => false,
+                        );
+                      }
+                      catch(e){
+                        Get.snackbar(
+                          'Failed',
+                          'Could not log you out',
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
                     },
                     icon: const Icon(
                       Icons.login,
