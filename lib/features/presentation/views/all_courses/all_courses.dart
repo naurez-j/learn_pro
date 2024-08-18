@@ -6,9 +6,11 @@ import 'package:learn_pro/features/data/data_sources/remote_datasource.dart';
 import 'package:learn_pro/features/data/models/response/all_courses_response.dart';
 import 'package:learn_pro/features/presentation/bloc/all_courses/all_courses_bloc.dart';
 import 'package:learn_pro/features/presentation/views/create_course/create_course.dart';
+import 'package:learn_pro/features/presentation/views/update_course/update_course.dart';
 import 'package:learn_pro/features/presentation/widgets/course_template.dart';
 import 'package:learn_pro/features/presentation/widgets/default_loading.dart';
 import 'package:learn_pro/features/presentation/widgets/failed_widget.dart';
+import 'package:learn_pro/utils/app_colors.dart';
 import 'package:learn_pro/utils/app_consts.dart';
 import 'package:learn_pro/utils/app_images.dart';
 import 'package:learn_pro/utils/app_styles.dart';
@@ -36,7 +38,7 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.black,
       body: SafeArea(
         child: BlocListener<AllCoursesBloc, AllCoursesState>(
           listener: (context, state) {
@@ -69,55 +71,62 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Icon(
+                    const Icon(
                       Icons.school,
                       color: Colors.white,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Text(
+                    const Text(
                       'All Courses',
                       style: AppStyles.whiteBold20,
                     ),
-                    Spacer(),
-
-                    IconButton(onPressed: (){
-                      BlocProvider.of<AllCoursesBloc>(context).add(AllCoursesStartEvent());
-                    }, icon: Icon(Icons.refresh,color: Colors.white,),
-                    ),
-
-                    AppConst.role=='instructor'? IconButton(
+                    const Spacer(),
+                    IconButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => CreateCoursePage(),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(0.0, 0.0),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
+                        BlocProvider.of<AllCoursesBloc>(context)
+                            .add(AllCoursesStartEvent());
                       },
-                      icon: Icon(
-                        Icons.add,
+                      icon: const Icon(
+                        Icons.refresh,
                         color: Colors.white,
                       ),
-                    ):Container(),
-
-
+                    ),
+                    AppConst.role == 'instructor'
+                        ? IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      const CreateCoursePage(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    return SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(0.0, 0.0),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
                 isLoading
-                    ? Expanded(child: DefaultLoading())
+                    ? const Expanded(child: DefaultLoading())
                     : isFailed
-                        ? FailedWidget()
+                        ? const FailedWidget()
                         : Expanded(
                             child: ListView.builder(
                                 itemCount: allCourses!.length,
@@ -152,6 +161,37 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
                                     instructor:
                                         allCourses![index].instructor.name,
                                     preImageIcon: AppImages.courseIcon,
+                                    onEditTap: AppConst.role == 'instructor'
+                                        ? () {
+                                            Navigator.push(
+                                              context,
+                                              PageRouteBuilder(
+                                                pageBuilder: (context,
+                                                        animation,
+                                                        secondaryAnimation) =>
+                                                    UpdateCourse(
+                                                  id: allCourses![index].id,
+                                                      title: allCourses![index].title,
+                                                      category: allCourses![index].category,
+                                                      des: allCourses![index].description,
+                                                ),
+                                                transitionsBuilder: (context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                    child) {
+                                                  return SlideTransition(
+                                                    position: Tween<Offset>(
+                                                      begin: const Offset(
+                                                          0.0, 0.0),
+                                                      end: Offset.zero,
+                                                    ).animate(animation),
+                                                    child: child,
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          }
+                                        : null,
                                   );
                                 }),
                           )
