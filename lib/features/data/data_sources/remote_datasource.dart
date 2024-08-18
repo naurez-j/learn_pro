@@ -15,8 +15,7 @@ class RemoteDataSource {
     try {
       final response = await dio.post(
           'https://festive-clarke.93-51-37-244.plesk.page/api/v1/login',
-          data: loginRequestModel.toJson()
-      );
+          data: loginRequestModel.toJson());
       final responseData = response.data;
       return LoginResponseModel.fromJson(responseData);
     } catch (e) {
@@ -24,17 +23,17 @@ class RemoteDataSource {
     }
   }
 
-  Future<RegisterResponseModel>registerUser(RegisterRequestModel registerRequestModel)async{
-    try{
-      final response = await dio.post('https://festive-clarke.93-51-37-244.plesk.page/api/v1/register',
-      data: registerRequestModel.toJson()
-      );
+  Future<RegisterResponseModel> registerUser(
+      RegisterRequestModel registerRequestModel) async {
+    try {
+      final response = await dio.post(
+          'https://festive-clarke.93-51-37-244.plesk.page/api/v1/register',
+          data: registerRequestModel.toJson());
       final responseData = response.data;
       return RegisterResponseModel.fromJson(responseData);
-    }
-        catch(e){
+    } catch (e) {
       throw Exception(e);
-        }
+    }
   }
 
   Future<List<AllCoursesResponse>> getAllCourses() async {
@@ -49,7 +48,9 @@ class RemoteDataSource {
       );
       final List responseData = response.data;
       print(response);
-      return responseData.map((course) => AllCoursesResponse.fromJson(course)).toList();
+      return responseData
+          .map((course) => AllCoursesResponse.fromJson(course))
+          .toList();
     } catch (e) {
       throw Exception(e);
     }
@@ -67,10 +68,44 @@ class RemoteDataSource {
       );
       final List responseData = response.data;
       print(response);
-      return responseData.map((course) => AllCoursesResponse.fromJson(course)).toList();
+      return responseData
+          .map((course) => AllCoursesResponse.fromJson(course))
+          .toList();
     } catch (e) {
       throw Exception(e);
     }
   }
 
+  ///Direct Usage (Without clean architecture and BLOC)
+  Future<void> enrollIntoCourse(int courseId) async {
+    try {
+      await dio.post(
+        'https://festive-clarke.93-51-37-244.plesk.page/api/v1/courses/${courseId}/enroll',
+        data: {"course": courseId},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${AppConst.token}',
+          },
+        ),
+      );
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<void> unEnrollCourse(int courseId) async {
+    try {
+      await dio.delete(
+        'https://festive-clarke.93-51-37-244.plesk.page/api/v1/courses/${courseId}/unenroll',
+        data: {"course": courseId},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${AppConst.token}',
+          },
+        ),
+      );
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:learn_pro/features/data/data_sources/remote_datasource.dart';
 import 'package:learn_pro/features/data/models/response/all_courses_response.dart';
 import 'package:learn_pro/features/presentation/bloc/all_courses/all_courses_bloc.dart';
 import 'package:learn_pro/features/presentation/widgets/course_template.dart';
 import 'package:learn_pro/features/presentation/widgets/default_loading.dart';
 import 'package:learn_pro/features/presentation/widgets/failed_widget.dart';
+import 'package:learn_pro/utils/app_consts.dart';
 import 'package:learn_pro/utils/app_images.dart';
 import 'package:learn_pro/utils/app_styles.dart';
 
@@ -18,6 +20,9 @@ class AllCoursesScreen extends StatefulWidget {
 }
 
 class _AllCoursesScreenState extends State<AllCoursesScreen> {
+
+  RemoteDataSource remoteDataSource = RemoteDataSource();
+
   List<AllCoursesResponse>? allCourses;
   bool isLoading = true;
   bool isFailed = false;
@@ -86,13 +91,33 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
                                 itemCount: allCourses!.length,
                                 itemBuilder: (context, index) {
                                   return CourseTemplate(
+                                    onEnrollTap: AppConst.role=='student'?()async{
+                                      try{
+                                        await remoteDataSource.enrollIntoCourse(allCourses![index].id);
+                                        Get.snackbar(
+                                          'Success',
+                                          'You have enrolled to this course',
+                                          backgroundColor: Colors.lightGreenAccent,
+                                          colorText: Colors.black,
+                                        );
+                                      }catch(e){
+                                        Get.snackbar(
+                                          'Failed',
+                                          'Something went wrong',
+                                          backgroundColor: Colors.red,
+                                          colorText: Colors.white,
+                                        );
+                                      }
+                                    }:null,
                                       description:
                                           allCourses![index].description,
                                       title: allCourses![index].title,
                                       id: allCourses![index].id,
                                       instructor:
                                           allCourses![index].instructor.name,
-                                      preImageIcon: AppImages.courseIcon);
+                                      preImageIcon: AppImages.courseIcon,
+
+                                  );
                                 }),
                           )
               ],

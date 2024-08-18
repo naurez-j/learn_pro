@@ -8,6 +8,7 @@ import 'package:learn_pro/features/presentation/views/login/login_screen.dart';
 import 'package:learn_pro/features/presentation/widgets/course_template.dart';
 import 'package:learn_pro/features/presentation/widgets/custom_button.dart';
 import 'package:learn_pro/features/presentation/widgets/default_loading.dart';
+import 'package:learn_pro/features/presentation/widgets/failed_widget.dart';
 import 'package:learn_pro/utils/app_colors.dart';
 import 'package:learn_pro/utils/app_consts.dart';
 import 'package:learn_pro/utils/app_images.dart';
@@ -23,6 +24,7 @@ class StudentDashboard extends StatefulWidget {
 }
 
 class _StudentDashboardState extends State<StudentDashboard> {
+  RemoteDataSource remoteDataSource = RemoteDataSource();
   List<AllCoursesResponse>? enrolledCourses;
   bool isLoading = true;
   bool isFailed = false;
@@ -100,7 +102,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) =>
+                            pageBuilder: (context, animation,
+                                secondaryAnimation) =>
                             const LoginScreen(),
                           ),
                               (Route<dynamic> route) => false,
@@ -177,12 +180,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   height: 30,
                 ),
 
-                CustomButton(title: 'View All Courses', onTap: (){
+                CustomButton(title: 'View All Courses', onTap: () {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => AllCoursesScreen(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          AllCoursesScreen(),
+                      transitionsBuilder: (context, animation,
+                          secondaryAnimation, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
                             begin: const Offset(0.0, 0.0),
@@ -193,16 +198,26 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       },
                     ),
                   );
-                },prefixIcon: Icons.school,),
+                }, prefixIcon: Icons.school,),
 
                 const SizedBox(
                   height: 30,
                 ),
-                const Text(
-                  'Enrolled Courses',
-                  style: AppStyles.whiteBold20,
-                  softWrap: true,
-                  overflow: TextOverflow.visible,
+                Row(
+                  children: [
+                    const Text(
+                      'Enrolled Courses',
+                      style: AppStyles.whiteBold20,
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ),
+                    
+                    IconButton(onPressed: (){
+                      BlocProvider.of<StudentDashboardBloc>(context)
+                          .add(StudentDashboardStarted());
+                    }, icon: Icon(Icons.refresh,color: Colors.white,),),
+                    
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
@@ -211,27 +226,39 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   child: isLoading
                       ? const DefaultLoading()
                       : isFailed
-                          ? const Center(
-                            child: Column(
-                              children: [
-                                Icon(Icons.warning_amber,color: Colors.redAccent,),
-                                Text('Failed',style: AppStyles.whiteBold14,),
-                              ],
-                            ),
-                          )
-                          : ListView.builder(
-                              itemCount: enrolledCourses!.length,
-                              itemBuilder: (context, index) {
-                                return CourseTemplate(
-                                  instructor: enrolledCourses![index].instructor.name,
-                                  description:
-                                      enrolledCourses![index].description,
-                                  title: enrolledCourses![index].title,
-                                  id: enrolledCourses![index].id,
-                                  preImageIcon: AppImages.courseIcon,
-                                );
-                              },
-                            ),
+                      ? const FailedWidget()
+                      : ListView.builder(
+                    itemCount: enrolledCourses!.length,
+                    itemBuilder: (context, index) {
+                      return CourseTemplate(
+                        onDeleteTap: ()async{
+                          try{
+                            await remoteDataSource.unEnrollCourse(enrolledCourses![index].id);
+                            BlocProvider.of<StudentDashboardBloc>(context)
+                                .add(StudentDashboardStarted());
+                            Get.snackbar(
+                              'Success', 'Un-Enrolled Successfully',
+                              backgroundColor: Colors.lightGreenAccent,
+                              colorText: Colors.black,
+                            );
+                          }
+                          catch(e){
+                            Get.snackbar(
+                              'Failed', 'Something went wrong...',
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
+                        instructor: enrolledCourses![index].instructor.name,
+                        description:
+                        enrolledCourses![index].description,
+                        title: enrolledCourses![index].title,
+                        id: enrolledCourses![index].id,
+                        preImageIcon: AppImages.courseIcon,
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

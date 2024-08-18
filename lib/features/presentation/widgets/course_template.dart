@@ -12,13 +12,17 @@ class CourseTemplate extends StatefulWidget {
   VoidCallback? onDeleteTap;
   VoidCallback? onEnrollTap;
 
-  CourseTemplate(
-      {super.key,
-      required this.description,
-      required this.title,
-      required this.id,
-      required this.preImageIcon,
-      this.instructor});
+  CourseTemplate({
+    super.key,
+    required this.description,
+    required this.title,
+    required this.id,
+    required this.preImageIcon,
+    this.instructor,
+    this.onDeleteTap,
+    this.onEditTap,
+    this.onEnrollTap,
+  });
 
   @override
   State<CourseTemplate> createState() => _CourseTemplateState();
