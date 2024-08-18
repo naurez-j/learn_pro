@@ -113,6 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 15,
                   ),
                   CustomTextField(
+                    obscureText: true,
                     title: 'Password',
                     controller: passwordTextController,
                     prefixIcon: Icons.password,

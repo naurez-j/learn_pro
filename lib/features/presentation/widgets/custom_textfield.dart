@@ -4,7 +4,15 @@ class CustomTextField extends StatefulWidget {
   final String title;
   final TextEditingController controller;
   final IconData prefixIcon;
-  CustomTextField({super.key,required this.controller,required this.title,required this.prefixIcon});
+  final bool obscureText;
+
+  CustomTextField({
+    super.key,
+    required this.controller,
+    required this.title,
+    required this.prefixIcon,
+    this.obscureText = false,
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -15,26 +23,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
+      obscureText: widget.obscureText,
       decoration: InputDecoration(
         hintText: widget.title,
         hintStyle: TextStyle(
           color: Colors.white,
         ),
         prefixIcon: Icon(
-          widget.prefixIcon, // Choose an icon
+          widget.prefixIcon,
           color: Colors.white,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(60),
           borderSide: BorderSide(
-            color: Colors.white, // White border when not focused
+            color: Colors.white,
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(60),
           borderSide: BorderSide(
-            color: Colors.yellow, // Yellow border when focused
+            color: Colors.yellow,
             width: 3,
           ),
         ),

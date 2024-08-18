@@ -136,6 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 15,
                   ),
                   CustomTextField(
+                    obscureText: true,
                     title: 'Password',
                     controller: passwordTextController,
                     prefixIcon: Icons.password,
