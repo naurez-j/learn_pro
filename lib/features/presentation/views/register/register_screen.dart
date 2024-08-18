@@ -34,9 +34,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.all(16.0),
             child: BlocListener<RegisterBloc, RegisterState>(
               listener: (context, state) {
-                if(state is RegisterSuccess){
+                if (state is RegisterSuccess) {
                   setState(() {
-                    isLoading=false;
+                    isLoading = false;
                   });
                   Get.snackbar(
                     'Register Successful',
@@ -44,15 +44,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     backgroundColor: Colors.lightGreenAccent,
                     colorText: Colors.black,
                   );
-                }
-                else if (state is RegisterLoading){
+                } else if (state is RegisterLoading) {
                   setState(() {
-                    isLoading=true;
+                    isLoading = true;
                   });
-                }
-                else if (state is RegisterFailed){
+                } else if (state is RegisterFailed) {
                   setState(() {
-                    isLoading=false;
+                    isLoading = false;
                   });
                   Get.snackbar(
                     'Failed',
@@ -133,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                          isStudent ? Colors.yellow : Colors.white,
+                              isStudent ? Colors.yellow : Colors.white,
                         ),
                         onPressed: () {
                           setState(() {
@@ -153,7 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                          isStudent ? Colors.white : Colors.yellow,
+                              isStudent ? Colors.white : Colors.yellow,
                         ),
                         onPressed: () {
                           setState(() {
@@ -172,31 +170,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  isLoading?
-                  const DefaultLoading():
-                  CustomButton(title: 'Submit', onTap: () {
-                    if(
-                    passwordTextController.text.isNotEmpty &&
-                    emailTextController.text.isNotEmpty &&
-                    nameTextController.text.isNotEmpty
-                    ){
-                      BlocProvider.of<RegisterBloc>(context).add(
-                          RegisterUserEvent(
-                              registerRequestModel: RegisterRequestModel(
+                  isLoading
+                      ? const DefaultLoading()
+                      : CustomButton(
+                          title: 'Submit',
+                          onTap: () {
+                            if (passwordTextController.text.isNotEmpty &&
+                                emailTextController.text.isNotEmpty &&
+                                nameTextController.text.isNotEmpty) {
+                              BlocProvider.of<RegisterBloc>(context).add(
+                                  RegisterUserEvent(
+                                      registerRequestModel:
+                                          RegisterRequestModel(
                                 password: passwordTextController.text,
                                 email: emailTextController.text,
                                 name: nameTextController.text,
                                 role: isStudent ? 'student' : 'instructor',
                               )));
-                    }
-                    else{
-                      Get.snackbar(
-                        'Fields Empty', 'Fill in all the fields..',
-                        backgroundColor: Colors.yellow,
-                        colorText: Colors.black,
-                      );
-                    }
-                  }),
+                            } else {
+                              Get.snackbar(
+                                'Fields Empty',
+                                'Fill in all the fields..',
+                                backgroundColor: Colors.yellow,
+                                colorText: Colors.black,
+                              );
+                            }
+                          }),
                 ],
               ),
             ),
