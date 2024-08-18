@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:learn_pro/features/presentation/bloc/all_courses/all_courses_bloc.dart';
 import 'package:learn_pro/features/presentation/bloc/login/login_bloc.dart';
 import 'package:learn_pro/features/presentation/bloc/register/register_bloc.dart';
+import 'package:learn_pro/features/presentation/bloc/splash/splash_bloc.dart';
 import 'package:learn_pro/features/presentation/bloc/student_dashboard/student_dashboard_bloc.dart';
 import 'package:learn_pro/features/presentation/views/splash/splash_screen.dart';
 
@@ -30,6 +31,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => RegisterBloc(),),
         BlocProvider(create: (context) => AllCoursesBloc(),),
         BlocProvider(create: (context) => StudentDashboardBloc(),),
+        BlocProvider(create: (context) => SplashBloc(),),
       ],
       child: const GetMaterialApp(
         debugShowCheckedModeBanner: false,

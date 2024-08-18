@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:learn_pro/features/data/data_sources/local_storage.dart';
 import 'package:learn_pro/features/data/models/response/login_response_model.dart';
 import 'package:meta/meta.dart';
 
@@ -15,11 +16,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   RepoInitial repoInitial = RepoImpl();
   LoginBloc() : super(LoginInitial()) {
     LoginUserUsecase loginUserUsecase = LoginUserUsecase(repoInitial);
+    LocalStorage localStorage = LocalStorage();
     on<LoginUserEvent>((event, emit) async {
       emit(LoginLoading());
       try {
         final LoginResponseModel loginResponseModel;
         loginResponseModel=await loginUserUsecase.loginUser(event.loginRequestModel);
+        await localStorage.saveToken(loginResponseModel.token);
         emit(LoginSuccess(loginResponseModel: loginResponseModel));
       } catch (e) {
         print(e);

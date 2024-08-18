@@ -17,6 +17,7 @@ class RemoteDataSource {
           'https://festive-clarke.93-51-37-244.plesk.page/api/v1/login',
           data: loginRequestModel.toJson());
       final responseData = response.data;
+      print(responseData);
       return LoginResponseModel.fromJson(responseData);
     } catch (e) {
       throw Exception(e);
@@ -30,6 +31,7 @@ class RemoteDataSource {
           'https://festive-clarke.93-51-37-244.plesk.page/api/v1/register',
           data: registerRequestModel.toJson());
       final responseData = response.data;
+      print(responseData);
       return RegisterResponseModel.fromJson(responseData);
     } catch (e) {
       throw Exception(e);
@@ -76,7 +78,7 @@ class RemoteDataSource {
     }
   }
 
-  ///Direct Usage (Without clean architecture and BLOC)
+  ///Direct Usage (Without clean architecture and BLOC - Due to lack of time)
   Future<void> enrollIntoCourse(int courseId) async {
     try {
       await dio.post(
@@ -138,11 +140,46 @@ class RemoteDataSource {
       await dio.post(
         'https://festive-clarke.93-51-37-244.plesk.page/api/v1/courses/$id/update',
         data: {
-          "course":id,
-          "title":title,
-          "category":category,
-          "description":description
+          "course": id,
+          "title": title,
+          "category": category,
+          "description": description
         },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${AppConst.token}',
+          },
+        ),
+      );
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
+  Future<LoginResponseModel> authenticateUser(String token) async {
+    LoginResponseModel loginResponseModel;
+    try {
+      final response = await dio.get(
+        'https://festive-clarke.93-51-37-244.plesk.page/api/v1/user',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      final responseData = response.data;
+      return LoginResponseModel.fromJson(responseData);
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
+  Future<void> logoutUser() async {
+    try {
+      await dio.post(
+        'https://festive-clarke.93-51-37-244.plesk.page/api/v1/logout',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${AppConst.token}',
