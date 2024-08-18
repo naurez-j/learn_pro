@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:learn_pro/features/data/data_sources/remote_datasource.dart';
 import 'package:learn_pro/features/data/models/response/all_courses_response.dart';
 import 'package:learn_pro/features/presentation/bloc/all_courses/all_courses_bloc.dart';
+import 'package:learn_pro/features/presentation/views/create_course/create_course.dart';
 import 'package:learn_pro/features/presentation/widgets/course_template.dart';
 import 'package:learn_pro/features/presentation/widgets/default_loading.dart';
 import 'package:learn_pro/features/presentation/widgets/failed_widget.dart';
@@ -20,7 +21,6 @@ class AllCoursesScreen extends StatefulWidget {
 }
 
 class _AllCoursesScreenState extends State<AllCoursesScreen> {
-
   RemoteDataSource remoteDataSource = RemoteDataSource();
 
   List<AllCoursesResponse>? allCourses;
@@ -80,6 +80,38 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
                       'All Courses',
                       style: AppStyles.whiteBold20,
                     ),
+                    Spacer(),
+
+                    IconButton(onPressed: (){
+                      BlocProvider.of<AllCoursesBloc>(context).add(AllCoursesStartEvent());
+                    }, icon: Icon(Icons.refresh,color: Colors.white,),
+                    ),
+
+                    AppConst.role=='instructor'? IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => CreateCoursePage(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ):Container(),
+
+
                   ],
                 ),
                 isLoading
@@ -91,32 +123,35 @@ class _AllCoursesScreenState extends State<AllCoursesScreen> {
                                 itemCount: allCourses!.length,
                                 itemBuilder: (context, index) {
                                   return CourseTemplate(
-                                    onEnrollTap: AppConst.role=='student'?()async{
-                                      try{
-                                        await remoteDataSource.enrollIntoCourse(allCourses![index].id);
-                                        Get.snackbar(
-                                          'Success',
-                                          'You have enrolled to this course',
-                                          backgroundColor: Colors.lightGreenAccent,
-                                          colorText: Colors.black,
-                                        );
-                                      }catch(e){
-                                        Get.snackbar(
-                                          'Failed',
-                                          'Something went wrong',
-                                          backgroundColor: Colors.red,
-                                          colorText: Colors.white,
-                                        );
-                                      }
-                                    }:null,
-                                      description:
-                                          allCourses![index].description,
-                                      title: allCourses![index].title,
-                                      id: allCourses![index].id,
-                                      instructor:
-                                          allCourses![index].instructor.name,
-                                      preImageIcon: AppImages.courseIcon,
-
+                                    onEnrollTap: AppConst.role == 'student'
+                                        ? () async {
+                                            try {
+                                              await remoteDataSource
+                                                  .enrollIntoCourse(
+                                                      allCourses![index].id);
+                                              Get.snackbar(
+                                                'Success',
+                                                'You have enrolled to this course',
+                                                backgroundColor:
+                                                    Colors.lightGreenAccent,
+                                                colorText: Colors.black,
+                                              );
+                                            } catch (e) {
+                                              Get.snackbar(
+                                                'Failed',
+                                                'Something went wrong',
+                                                backgroundColor: Colors.red,
+                                                colorText: Colors.white,
+                                              );
+                                            }
+                                          }
+                                        : null,
+                                    description: allCourses![index].description,
+                                    title: allCourses![index].title,
+                                    id: allCourses![index].id,
+                                    instructor:
+                                        allCourses![index].instructor.name,
+                                    preImageIcon: AppImages.courseIcon,
                                   );
                                 }),
                           )

@@ -108,4 +108,29 @@ class RemoteDataSource {
       throw Exception(e);
     }
   }
+
+  Future<void>createCourse(String title,String category,String description)async{
+    print('Trying to create a course');
+    try{
+      await dio.post('https://festive-clarke.93-51-37-244.plesk.page/api/v1/courses',
+        data: {
+          "title": title,
+          "category":category,
+          "description":description
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${AppConst.token}',
+          },
+        ),
+      );
+    }catch(e){
+      throw Exception(e);
+    }
+  }
+
+  // Future<void>getAuthenticatedUser()async{
+  //
+  // }
+
 }
